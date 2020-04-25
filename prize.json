@@ -1,0 +1,26 @@
+[
+  {
+    "code": "p0",
+    "name": "手机",
+    "probability": 1,
+    "total": 5,
+    "day_limit": 1,
+    "user_limit": -1
+  },
+  {
+    "code": "p1",
+    "name": "电话卡",
+    "probability": 5,
+    "total": 100,
+    "day_limit": -1,
+    "user_limit": 2
+  },
+  {
+    "code": "p2",
+    "name": "贴纸",
+    "probability": 94,
+    "total": -1,
+    "day_limit": -1,
+    "user_limit": -1
+  }
+]
