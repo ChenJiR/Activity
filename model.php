@@ -41,6 +41,12 @@ class User extends Model
      */
     public $text;
 
+    /**
+     * 注册时间
+     * @var string
+     */
+    public $sign_up_time;
+
     protected static function dbNamespace()
     {
         return "u:";
@@ -49,6 +55,19 @@ class User extends Model
     protected function PK()
     {
         return "phone";
+    }
+
+    public function save()
+    {
+        if (!$this->{static::PK()}) {
+            return false;
+        }
+        $key = static::dbNamespace() . $this->{static::PK()};
+        $redis = RedisService::getInstance()->redis();
+        if (!$redis->get($key)) {
+            $this->sign_up_time = Helper::NowTime();
+        }
+        return RedisService::getInstance()->redis()->set($key, serialize($this));
     }
 }
 
@@ -160,7 +179,7 @@ class Lottery extends Model
     /**
      * @var string
      */
-    private $lottery_time;
+    public $lottery_time;
 
     /**
      * 保存抽奖记录
@@ -185,8 +204,7 @@ class Lottery extends Model
     public static function countUserWinPrize($phone, $prize_code)
     {
         $search_key = static::dbNamespace() . "$phone|$prize_code|*";
-        $keys = RedisService::getInstance()->redis()->keys($search_key);
-        return count($keys);
+        return RedisService::getInstance()->countKeys($search_key);
     }
 
     /**
@@ -197,8 +215,7 @@ class Lottery extends Model
     public static function countUserLotteryToday($phone)
     {
         $search_key = static::dbNamespace() . "$phone|*|" . date('Ymd');
-        $keys = RedisService::getInstance()->redis()->keys($search_key);
-        return count($keys);
+        return RedisService::getInstance()->countKeys($search_key);
     }
 
     /**
@@ -209,8 +226,7 @@ class Lottery extends Model
     public static function countPrizeNum($prize_code)
     {
         $search_key = static::dbNamespace() . "*|$prize_code|*";
-        $keys = RedisService::getInstance()->redis()->keys($search_key);
-        return count($keys);
+        return RedisService::getInstance()->countKeys($search_key);
     }
 
 }

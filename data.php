@@ -1,6 +1,10 @@
 <?php
 
-switch ($argv[0]) {
+require "model.php";
+require "service.php";
+require "helper.php";
+
+switch ($argv[1]) {
     case "user":
         getUserInfo();
         break;
@@ -15,10 +19,27 @@ switch ($argv[0]) {
 
 function getUserInfo()
 {
-    return;
+    $file = fopen("user.txt", "w");
+    foreach (RedisService::getInstance()->iterratorKeys("u:*") as $u) {
+        $user = unserialize($u);
+        fwrite($file, "$user->phone    $user->text    $user->sign_up_time " . PHP_EOL);
+    }
+    fclose($file);
+    return "generate file success";
 }
 
 function getLotteryResult()
 {
-    return;
+    $prize_json = file_get_contents("prize.json");
+    $prize_list = [];
+    foreach (json_decode($prize_json, true) as $item) {
+        $prize_list[$item["code"]] = $item["name"];
+    }
+    $file = fopen("lottery.txt", "w");
+    foreach (RedisService::getInstance()->iterratorKeys("lottery:*") as $l) {
+        $lottery = unserialize($l);
+        fwrite($file, "$lottery->phone    " . $prize_list[$lottery->prize_code] . "    $lottery->lottery_time " . PHP_EOL);
+    }
+    fclose($file);
+    return "generate file success";
 }

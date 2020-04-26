@@ -23,12 +23,12 @@ class Controller
      * index
      * @return Response
      */
-    function index()
+    public function index()
     {
-        return Response::htmlReturn("view.php", ["test" => "test12123"]);
+        return Response::htmlReturn("view.php");
     }
 
-    function getUserInfo()
+    public function getUserInfo()
     {
         $user = UserService::getInstance()->verifyToken($this->getToken());
         if (!$user) {

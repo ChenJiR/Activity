@@ -309,4 +309,61 @@ class RedisService extends Service
         }
         return $this->redis;
     }
+
+    public function countKeys($pattern, $count = 1000)
+    {
+        if (!$pattern) {
+            return 0;
+        }
+        $redis = $this->redis();
+        $redis->setOption(Redis::OPT_SCAN, Redis::SCAN_RETRY);
+        $res = 0;
+        $iterator = null;
+        while (false !== ($keys = $redis->scan($iterator, $pattern, $count))) {
+            $res += count($keys);
+        }
+        return $res;
+    }
+
+    /**
+     * 迭代获取key
+     * @param $pattern
+     * @param int $count
+     * @return Generator
+     */
+    public function keys($pattern, $count = 1000)
+    {
+        if (!$pattern) {
+            return;
+        }
+        $redis = $this->redis();
+        $redis->setOption(Redis::OPT_SCAN, Redis::SCAN_RETRY);
+        $iterator = null;
+        while (false !== ($keys = $redis->scan($iterator, $pattern, $count))) {
+            foreach ($keys as $key) {
+                yield $key;
+            }
+        }
+    }
+
+    /**
+     * 迭代获取值
+     * @param $pattern
+     * @param int $count
+     * @return Generator
+     */
+    public function iterratorKeys($pattern, $count = 1000)
+    {
+        if (!$pattern) {
+            return;
+        }
+        $redis = $this->redis();
+        $redis->setOption(Redis::OPT_SCAN, Redis::SCAN_RETRY);
+        $iterator = null;
+        while (false !== ($keys = $redis->scan($iterator, $pattern, $count))) {
+            foreach ($keys as $key) {
+                yield $redis->get($key);
+            }
+        }
+    }
 }
