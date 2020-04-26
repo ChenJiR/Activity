@@ -67,7 +67,7 @@
             return {
                 is_login: !!auth,
                 form: {phone: "", code: "", text: ""},
-                phone: "texttest",
+                phone: "",
                 text: "",
                 is_lottery: false,
                 axios: axios.create({
@@ -81,10 +81,11 @@
                 var _this = this;
                 this.axios.get('?r=getUserInfo')
                     .then(function (response) {
-                        switch (res.data.code) {
+                        switch (response.data.code) {
                             case 0:
                                 _this.phone = response.data.data.phone;
                                 _this.text = response.data.data.text;
+                                _this.is_lottery = response.data.data.is_lottery;
                                 break;
                             case -2:
                             case -1:

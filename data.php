@@ -20,12 +20,13 @@ switch ($argv[1]) {
 function getUserInfo()
 {
     $file = fopen("user.txt", "w");
+    fwrite($file, "   手机号       征文内容         报名时间 " . PHP_EOL);
     foreach (RedisService::getInstance()->iterratorKeys("u:*") as $u) {
         $user = unserialize($u);
         fwrite($file, "$user->phone    $user->text    $user->sign_up_time " . PHP_EOL);
     }
     fclose($file);
-    return "generate file success";
+    exit("generate file success");
 }
 
 function getLotteryResult()
@@ -36,10 +37,11 @@ function getLotteryResult()
         $prize_list[$item["code"]] = $item["name"];
     }
     $file = fopen("lottery.txt", "w");
+    fwrite($file, "   手机号       奖品         中奖时间 " . PHP_EOL);
     foreach (RedisService::getInstance()->iterratorKeys("lottery:*") as $l) {
         $lottery = unserialize($l);
         fwrite($file, "$lottery->phone    " . $prize_list[$lottery->prize_code] . "    $lottery->lottery_time " . PHP_EOL);
     }
     fclose($file);
-    return "generate file success";
+    exit("generate file success");
 }

@@ -36,7 +36,8 @@ class Controller
         }
         return Response::ajaxSuccess("", [
             "phone" => $user->phone,
-            "text" => $user->text
+            "text" => $user->text,
+            "is_lottery" => !LotteryService::getInstance()->canLottery($user),
         ]);
     }
 

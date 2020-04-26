@@ -214,14 +214,7 @@ class LotteryService extends Service
      */
     public function getPrizeWinCount(Prize $prize)
     {
-        $key = self::PRIZE_WIN_CACHE_KEY . $prize->code;
-        $redis = RedisService::getInstance()->redis();
-        $res = $redis->get($key);
-        if (false === $res) {
-            $res = Lottery::countPrizeNum($prize->code);
-            $redis->set($key, $res);
-        }
-        return $res;
+        return RedisService::getInstance()->redis()->get(self::PRIZE_WIN_CACHE_KEY . $prize->code);
     }
 
 }
