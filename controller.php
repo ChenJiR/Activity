@@ -88,8 +88,8 @@ class Controller
         }
 
         try {
-            $sms_info = RedisService::getInstance()->redis()
-                ->get($this->generateVerifyCodeKey($data["phone"]));
+            $redis = RedisService::getInstance()->redis();
+            $sms_info = $redis->get($this->generateVerifyCodeKey($data["phone"]));
             if (!$sms_info) {
                 return Response::ajaxError("请重新发送验证码后再试");
             }
@@ -99,6 +99,7 @@ class Controller
             }
 
             $user = UserService::getInstance()->signUp($data["phone"]);
+            $redis->del($this->generateVerifyCodeKey($data["phone"]));
 
             return Response::ajaxSuccess("报名成功", [
                 "phone" => $user->phone,
