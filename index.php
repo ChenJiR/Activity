@@ -1,5 +1,6 @@
 <?php
 ini_set('date.timezone', 'Asia/Shanghai');
+error_reporting(E_ALL ^ E_NOTICE);
 
 require "controller.php";
 require "service.php";
@@ -24,12 +25,17 @@ class Application
      * 处理请求并获取response
      * @param Request $request
      * @return Response
+     * @throws ReflectionException
      */
     private function handleRequest(Request $request)
     {
         //简单路由
         $router = $_GET["r"] ?: "index";
-        $response = (new Controller($request))->$router();
+        $c = new ReflectionClass("Controller");
+        if (!$c->hasMethod($router)) {
+            $router = "index";
+        }
+        $response = $c->getMethod($router)->invoke($c->newInstance($request));
         return $response;
     }
 }
